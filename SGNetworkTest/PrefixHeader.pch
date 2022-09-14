@@ -1,0 +1,13 @@
+//
+//  PrefixHeader.pch
+//  KDIOSAppTemplate
+//
+//  Created by Blankwonder on 2021/11/10.
+//
+
+#ifndef PrefixHeader_pch
+#define PrefixHeader_pch
+
+#include <TargetConditionals.h>
+
+#endif /* PrefixHeader_pch */
