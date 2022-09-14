@@ -69,9 +69,9 @@
     KDActionCell *httpDelayTestGlobal = [[KDActionCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
     [httpDelayTestGlobal setAction:^(KDActionCell *cell, NSIndexPath *indexPath) {
         HTTPDelayTestObject *obj = [[HTTPDelayTestObject alloc] init];
-        obj.testURLs = @[@"http://www.twitter.com",
+        obj.testURLs = @[@"http://www.cloudflare.com",
                          @"http://www.facebook.com",
-                         @"http://www.google.com",
+                         @"https://www.gstatic.com/generate_204",
                          @"http://www.amazon.com",
                          @"http://www.apple.com"];
         TestRunningViewController *vc = [[TestRunningViewController alloc] initWithTestObj:obj];
@@ -85,9 +85,9 @@
     KDActionCell *httpsDelayTestGlobal = [[KDActionCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
     [httpsDelayTestGlobal setAction:^(KDActionCell *cell, NSIndexPath *indexPath) {
         HTTPDelayTestObject *obj = [[HTTPDelayTestObject alloc] init];
-        obj.testURLs = @[@"https://www.twitter.com",
+        obj.testURLs = @[@"https://www.cloudflare.com",
                          @"https://www.facebook.com",
-                         @"https://www.google.com",
+                         @"https://www.gstatic.com/generate_204",
                          @"https://www.amazon.com",
                          @"https://www.apple.com"];
         TestRunningViewController *vc = [[TestRunningViewController alloc] initWithTestObj:obj];

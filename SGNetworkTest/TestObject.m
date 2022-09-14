@@ -82,10 +82,10 @@
                 return;
             }
             
-            int res = (CFAbsoluteTimeGetCurrent() - t) * 1000.0;
+            double res = (CFAbsoluteTimeGetCurrent() - t) * 1000.0;
             [_results addObject:@(res)];
             
-            [self.output testObject:self hasNewOutput:[NSString stringWithFormat:@"Test completed in %dms: %@", res, url]];
+            [self.output testObject:self hasNewOutput:[NSString stringWithFormat:@"Test completed in %.0fms: %@", res, url]];
             
             if (_results.count == self.testURLs.count) {
                 int sum = 0;
@@ -98,16 +98,24 @@
                     }
                 }
                 
-                int avg = sum / (int)_results.count;
+                double avg = sum / (double)_results.count;
                 [_roundResults addObject:@(avg)];
                 [_session invalidateAndCancel];
                 _session = nil;
 
-                [self.output testObject:self hasNewOutput:[NSString stringWithFormat:@"All test completed, average: %dms", avg]];
+                [self.output testObject:self hasNewOutput:[NSString stringWithFormat:@"All test completed, average: %.0fms", avg]];
                 [self jobEnd];
             }
         }] resume];
     }
+}
+
+- (void)URLSession:(NSURLSession *)session
+              task:(NSURLSessionTask *)task
+willPerformHTTPRedirection:(NSHTTPURLResponse *)response
+        newRequest:(NSURLRequest *)request
+ completionHandler:(void (^)(NSURLRequest *))completionHandler {
+    completionHandler(nil); // Disable 301/302 redirect
 }
 
 - (void)allCompleted {
@@ -116,9 +124,9 @@
     NSInteger top = _roundResults.count / 2;
 
     [_roundResults sortUsingSelector:@selector(compare:)];
-    [_roundResults removeObjectsInRange:NSMakeRange(top + 1, _roundResults.count - (top + 1))];
+    [_roundResults removeObjectsInRange:NSMakeRange(top, _roundResults.count - top)];
 
-    [self.output testObject:self hasNewOutput:[NSString stringWithFormat:@"All round completed, average of the top %ld rounds: %.2fms", _roundResults.count, [[_roundResults valueForKeyPath:@"@avg.self"] doubleValue]]];
+    [self.output testObject:self hasNewOutput:[NSString stringWithFormat:@"All round completed, average of the top %ld rounds: %.0fms", _roundResults.count, [[_roundResults valueForKeyPath:@"@avg.self"] doubleValue]]];
 }
 
 @end
