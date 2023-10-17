@@ -30,6 +30,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+
+    [NSNotificationCenter.defaultCenter addObserver:_tableView selector:@selector(reloadData) name:UIApplicationWillEnterForegroundNotification object:nil];
     
     self.title = @"SGNetworkTest";
     
@@ -72,7 +74,7 @@
         obj.testURLs = @[@"http://www.cloudflare.com",
                          @"http://www.facebook.com",
                          @"https://www.gstatic.com/generate_204",
-                         @"http://www.amazon.com",
+                         @"http://www.live.com",
                          @"http://www.apple.com"];
         TestRunningViewController *vc = [[TestRunningViewController alloc] initWithTestObj:obj];
         vc.title = cell.textLabel.text;
@@ -88,7 +90,7 @@
         obj.testURLs = @[@"https://www.cloudflare.com",
                          @"https://www.facebook.com",
                          @"https://www.gstatic.com/generate_204",
-                         @"https://www.amazon.com",
+                         @"https://www.live.com",
                          @"https://www.apple.com"];
         TestRunningViewController *vc = [[TestRunningViewController alloc] initWithTestObj:obj];
         vc.title = cell.textLabel.text;
@@ -98,7 +100,51 @@
     httpsDelayTestGlobal.textLabel.text = @"HTTPS Delay Test (Global)";
     httpsDelayTestGlobal.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 
-    _cells = @[@[httpDelayTest, httpsDelayTest, httpDelayTestGlobal, httpsDelayTestGlobal]];
+
+    KDActionCell *httpsConnectivityTestGlobal = [[KDActionCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
+    [httpsConnectivityTestGlobal setAction:^(KDActionCell *cell, NSIndexPath *indexPath) {
+        HTTPConnectivyTestObject *obj = [[HTTPConnectivyTestObject alloc] init];
+        obj.testURLs = @[@"https://www.cloudflare.com"];
+        TestRunningViewController *vc = [[TestRunningViewController alloc] initWithTestObj:obj];
+        vc.title = cell.textLabel.text;
+
+        [self.navigationController pushViewController:vc animated:YES];
+    }];
+    httpsConnectivityTestGlobal.textLabel.text = @"Connectivity Test (https://www.cloudflare.com)";
+    httpsConnectivityTestGlobal.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+
+    KDActionCell *baiduConnectivityTestGlobal = [[KDActionCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
+    [baiduConnectivityTestGlobal setAction:^(KDActionCell *cell, NSIndexPath *indexPath) {
+        HTTPConnectivyTestObject *obj = [[HTTPConnectivyTestObject alloc] init];
+        obj.testURLs = @[@"http://www.baidu.com"];
+        TestRunningViewController *vc = [[TestRunningViewController alloc] initWithTestObj:obj];
+        vc.title = cell.textLabel.text;
+
+        [self.navigationController pushViewController:vc animated:YES];
+    }];
+    baiduConnectivityTestGlobal.textLabel.text = @"Connectivity Test (http://www.baidu.com)";
+    baiduConnectivityTestGlobal.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+
+#if DEBUG
+    KDActionCell *lanConnectivityTestGlobal = [[KDActionCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
+    [lanConnectivityTestGlobal setAction:^(KDActionCell *cell, NSIndexPath *indexPath) {
+        HTTPConnectivyTestObject *obj = [[HTTPConnectivyTestObject alloc] init];
+        obj.testURLs = @[@"http://c.bridge.yach.me"];
+        TestRunningViewController *vc = [[TestRunningViewController alloc] initWithTestObj:obj];
+        vc.title = cell.textLabel.text;
+
+        [self.navigationController pushViewController:vc animated:YES];
+    }];
+    lanConnectivityTestGlobal.textLabel.text = @"Connectivity Test (http://c.bridge.yach.me)";
+    lanConnectivityTestGlobal.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+
+    _cells = @[@[httpDelayTest, httpsDelayTest, httpDelayTestGlobal, httpsDelayTestGlobal], @[baiduConnectivityTestGlobal, httpsConnectivityTestGlobal, lanConnectivityTestGlobal]];
+
+#else
+    _cells = @[@[httpDelayTest, httpsDelayTest, httpDelayTestGlobal, httpsDelayTestGlobal], @[baiduConnectivityTestGlobal, httpsConnectivityTestGlobal]];
+#endif
+    
+    
 }
 
 
@@ -131,6 +177,17 @@
     return _cells[indexPath.section][indexPath.row];
 }
 
+- (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section {
+    if (section != 1) return nil;
+    CFDictionaryRef dicRef = CFNetworkCopySystemProxySettings();
+    const CFStringRef proxyCFstr = (const CFStringRef)CFDictionaryGetValue(dicRef, (const void*)kCFNetworkProxiesHTTPProxy);
+
+    if (proxyCFstr) {
+        return [NSString stringWithFormat:@"Proxy %@", proxyCFstr];
+    } else {
+        return nil;
+    }
+}
 
 @end
 

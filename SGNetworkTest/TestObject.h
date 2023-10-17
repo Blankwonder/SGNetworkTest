@@ -29,5 +29,9 @@ NS_ASSUME_NONNULL_BEGIN
 @interface HTTPDelayTestObject : TestObject
 @end
 
+@interface HTTPConnectivyTestObject : TestObject
+@end
+
+
 
 NS_ASSUME_NONNULL_END
